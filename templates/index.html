@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet"  href="/static/css/style.css">
+  <title>残業管理アプリ</title>
+  <script
+  src="https://code.jquery.com/jquery-3.5.1.js"
+  integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+  crossorigin="anonymous">
+  </script>
+</head>
+
+<body>
+  <main>
+    <div id="title" class="title">タスク</div>
+    <form name="f" method="post">
+      <div class="text_area"><input type="text" name="new_text" id="new_text"></div>
+      <table>
+{% for task in tasks %}
+        <tr>
+          <td
+            class="card"
+            id="task_{{task.id}}"
+            task_id="{{task.id}}">{{ task.text }}
+          </td>
+        </tr>
+{% endfor %}
+      </table>
+    </form>
+  </main>
+  
+  <script>
+    $(document).ready(function(){
+      $('#new_text').keydown(function(e) {
+        if (e.keyCode == 13) {
+          $('form[name="f"]').attr('action', '/new')
+          $('form[name="f"]').submit();
+        }
+      });
+    });
+  </script>  
+</body>
+
+</html>
