@@ -14,19 +14,41 @@
 
 <body>
   <main>
-    <div id="title" class="title">タスク</div>
+    <div id="title" class="title">残業時間</div>
     <form name="f" method="post">
-      <div class="text_area"><input type="text" name="new_text" id="new_text"></div>
+      <div class="text_area">
+        <input type="date" name="new_date" id="new_date">
+        <input type="number" name="new_text" id="new_text">
+      </div>
       <table>
-{% for task in tasks %}
-        <tr>
-          <td
-            class="card"
-            id="task_{{task.id}}"
-            task_id="{{task.id}}">{{ task.text }}
-          </td>
-        </tr>
-{% endfor %}
+        <thead>
+          <tr>
+            <th>状態</th>
+            <th>日付</th>
+            <th>残業時間</th>
+            <th>合計残業時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for overtime in overtimes %}
+            <tr>
+              <td>
+                {{ overtime.status }}
+              </td>
+              <td>
+                {{ overtime.date }}
+              </td>
+              <td
+                class="card"
+                id="overtime_{{overtime.id}}"
+                task_id="{{overtime.id}}">{{ overtime.time }}
+              </td>
+              <td>
+                {{ overtime.total_time}}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
       </table>
     </form>
   </main>
