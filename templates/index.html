@@ -23,6 +23,7 @@
       <table>
         <thead>
           <tr>
+            <th>ID</th>
             <th>状態</th>
             <th>日付</th>
             <th>残業時間</th>
@@ -32,6 +33,9 @@
         <tbody>
           {% for overtime in overtimes %}
             <tr>
+              <td>
+                {{ overtime.id }}
+              </td>
               <td>
                 {{ overtime.status }}
               </td>
@@ -52,6 +56,8 @@
       </table>
     </form>
   </main>
+  
+  <a href="/delete">データ削除</a>
   
   <script>
     $(document).ready(function(){
