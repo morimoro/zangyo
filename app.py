@@ -39,14 +39,17 @@ def delete():
 @app.route('/create', methods=["GET"])
 def create():
     print('create')
-    test = [Overtime(status = 0, time = 1, date = datetime.date(2022, 4, i+1), total_time = 0 ,time_36 = 0) for i in range(30)] 
-    db.session.add_all(test)
+    overtime = [Overtime(status = 0, time = 1, date = datetime.date(2022, 4, i+1), total_time = 0 ,time_36 = 0) for i in range(30)] 
+    db.session.add_all(overtime)
     db.session.commit()
     return redirect(url_for('index'))
 
 @app.route('/update', methods=["GET"])
 def update():
     print('update')
+    overtime = db.session.query(Overtime).filter(Overtime.id==1).first()
+    overtime.time = 100
+    db.session.commit()
     return redirect(url_for('index'))
 
 @app.route('/new', methods=["POST"])
