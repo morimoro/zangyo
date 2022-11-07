@@ -18,7 +18,8 @@ class Overtime(db.Model):
     time = db.Column(db.Float())
     total_time = db.Column(db.Float())
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def index():
