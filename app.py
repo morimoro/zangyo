@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import datetime
 
+print("run")
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zangyo.sqlite'
@@ -20,8 +22,8 @@ class Overtime(db.Model):
     total_time = db.Column(db.Float())
     time_36 = db.Column(db.Float())
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 @app.route('/')
 def index():
@@ -32,14 +34,16 @@ def index():
 
 @app.route('/delete')
 def delete():
-    Overtime.query.delete() # Overtimeデータベース削除
+    # Overtimeデータベース削除
+    Overtime.query.delete()
     db.session.commit()
     return redirect(url_for('index'))
 
 @app.route('/create', methods=["GET"])
 def create():
     print('create')
-    overtime = [Overtime(status = 0, time = 1, date = datetime.date(2022, 4, i+1), total_time = 0 ,time_36 = 0) for i in range(30)] 
+    # 2022/4/1から1日づつ30個データを作成　初期値は全て0
+    overtime = [Overtime(status = 0, time = 0, date = datetime.date(2022, 4, i+1), total_time = 0 ,time_36 = 0) for i in range(30)] 
     db.session.add_all(overtime)
     db.session.commit()
     return redirect(url_for('index'))
@@ -47,8 +51,18 @@ def create():
 @app.route('/update', methods=["GET"])
 def update():
     print('update')
-    overtime = db.session.query(Overtime).filter(Overtime.id==1).first()
-    overtime.time = 100
+    for i in range(30):
+            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
+            overtime.total_time = sum + overtime.time
+            sum = overtime.total_time
+    return redirect(url_for('index'))
+
+@app.route('/total_time', methods=["GET"])
+def total_time():
+    print('total_time')
+    for i in range(30):
+        overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
+        overtime.time = float(request.form["time_{}".format(i+1)])
     db.session.commit()
     return redirect(url_for('index'))
 

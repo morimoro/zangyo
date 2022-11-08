@@ -43,10 +43,8 @@
               <td>
                 {{ overtime.date }}
               </td>
-              <td
-                class="card"
-                id="overtime_{{overtime.id}}"
-                task_id="{{overtime.id}}">{{ overtime.time }}
+              <td>
+                <input type="number" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}">
               </td>
               <td>
                 {{ overtime.total_time}}
@@ -63,7 +61,8 @@
   
   <a href="/create">データ作成</a>  
   <a href="/delete">データ削除</a>
-  <a href="/update">データ更新</a>  
+  <a href="/update">残業時間データ更新</a>  
+  <a href="/total_time">月間残業時間計算</a>  
   
   <script>
     $(document).ready(function(){
