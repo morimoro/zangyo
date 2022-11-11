@@ -25,12 +25,27 @@ class Overtime(db.Model):
 # with app.app_context():
 #     db.create_all()
 
-@app.route('/')
+@app.route('/', methods=["GET", "POST"])
 def index():
-    overtimes = Overtime.query.order_by(Overtime.date).all() # 日付を昇順に並べ替え
-    db.session.commit()
-    # overtimes = Overtime.query.all()
-    return render_template("index.html", overtimes = overtimes)
+    if request.method == 'GET':
+        overtimes = Overtime.query.order_by(Overtime.date).all() # 日付を昇順に並べ替え
+        db.session.commit()
+        # overtimes = Overtime.query.all()
+        return render_template("index.html", overtimes = overtimes)
+    else:
+        print('update')
+        for i in range(30):
+            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
+            overtime.time = float(request.form["time_{}".format(i+1)])
+        db.session.commit()
+        print('total_time')
+        sum =0 
+        for i in range(30):
+            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
+            overtime.total_time = sum + overtime.time
+            sum = overtime.total_time
+            db.session.commit()
+        return redirect(url_for('index'))
 
 @app.route('/delete')
 def delete():
@@ -45,24 +60,6 @@ def create():
     # 2022/4/1から1日づつ30個データを作成　初期値は全て0
     overtime = [Overtime(status = 0, time = 0, date = datetime.date(2022, 4, i+1), total_time = 0 ,time_36 = 0) for i in range(30)] 
     db.session.add_all(overtime)
-    db.session.commit()
-    return redirect(url_for('index'))
-
-@app.route('/update', methods=["GET"])
-def update():
-    print('update')
-    for i in range(30):
-            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
-            overtime.total_time = sum + overtime.time
-            sum = overtime.total_time
-    return redirect(url_for('index'))
-
-@app.route('/total_time', methods=["GET"])
-def total_time():
-    print('total_time')
-    for i in range(30):
-        overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
-        overtime.time = float(request.form["time_{}".format(i+1)])
     db.session.commit()
     return redirect(url_for('index'))
 
