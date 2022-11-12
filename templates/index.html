@@ -24,7 +24,7 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>状態</th>
+            <th>出勤日</th>
             <th>日付</th>
             <th>残業時間</th>
             <th>月間残業時間</th>
@@ -38,7 +38,14 @@
                 {{ overtime.id }}
               </td>
               <td>
-                {{ overtime.status }}
+                <label>
+                  出勤
+                  {% if overtime.status == 0 %}
+                  <input type="checkbox" name="status">
+                  {% else %}
+                  <input type="checkbox" name="status" checked>
+                  {% endif %}
+                </label>
               </td>
               <td>
                 {{ overtime.date }}
