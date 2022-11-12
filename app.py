@@ -18,6 +18,7 @@ class Overtime(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     status = db.Column(db.Integer)
     date = db.Column(db.String())
+    weekday = db.Column(db.Integer)
     time = db.Column(db.Float())
     total_time = db.Column(db.Float())
     time_36 = db.Column(db.Float())
@@ -25,6 +26,8 @@ class Overtime(db.Model):
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == 'GET':
+        with app.app_context():
+            db.create_all()
         overtimes = Overtime.query.order_by(Overtime.date).all() # 日付を昇順に並べ替え
         db.session.commit()
         return render_template("index.html", overtimes = overtimes)
@@ -52,7 +55,7 @@ def delete():
 def create():
     print('create')
     # 2022/4/1から1日づつ30個データを作成　初期値は全て0
-    overtime = [Overtime(status = 0, date = datetime.date(2022, 4, i+1), time = 0, total_time = 0 ,time_36 = 0) for i in range(30)] 
+    overtime = [Overtime(status = 0, date = datetime.date(2022, 4, i+1), weekday = datetime.date(2022, 4, i+1).weekday(), time = 0, total_time = 0 ,time_36 = 0) for i in range(30)] 
     db.session.add_all(overtime)
     db.session.commit()
     return redirect(url_for('index'))

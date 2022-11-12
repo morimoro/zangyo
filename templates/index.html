@@ -26,6 +26,7 @@
             <th>ID</th>
             <th>出勤日</th>
             <th>日付</th>
+            <th>曜日</th>
             <th>残業時間</th>
             <th>月間残業時間</th>
             <th>36残業時間</th>
@@ -49,6 +50,16 @@
               </td>
               <td>
                 {{ overtime.date }}
+              </td>
+              <td>
+                {% if overtime.weekday == 0 %}月
+                {% elif overtime.weekday == 1 %}火
+                {% elif overtime.weekday == 2 %}水
+                {% elif overtime.weekday == 3 %}木
+                {% elif overtime.weekday == 4 %}金
+                {% elif overtime.weekday == 5 %}土
+                {% elif overtime.weekday == 6 %}日
+                {% endif %}
               </td>
               <td>
                 <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}">
