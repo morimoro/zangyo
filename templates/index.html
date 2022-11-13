@@ -16,10 +16,14 @@
   <main>
     <div id="title" class="title">残業時間</div>
     <form name="f" method="post">
-      <div class="text_area">
+      <!-- <div class="text_area">
         <input type="date" name="new_date" id="new_date">
         <input type="number" name="new_text" id="new_text">
-      </div>
+      </div> -->
+      月間予定残業
+      <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}">hr<br>
+      前月最終日36残業時間
+      <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}">hr<br>
       <table>
         <thead>
           <tr>
@@ -28,8 +32,9 @@
             <th>日付</th>
             <th>曜日</th>
             <th>残業時間</th>
-            <th>月間残業時間</th>
-            <th>36残業時間</th>
+            <th>休日残業</th>
+            <th>月間残業</th>
+            <th>36残業</th>
           </tr>
         </thead>
         <tbody>
@@ -39,14 +44,13 @@
                 {{ overtime.id }}
               </td>
               <td>
-                <label>
-                  出勤
                   {% if overtime.status == 0 %}
-                  <input type="checkbox" name="status">
+                  <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=1>出</label>
+                  <label><input type="radio" name="status_{{overtime.id}}" value=0 checked>休</label>
                   {% else %}
-                  <input type="checkbox" name="status" checked>
+                  <label><input type="radio" name="status_{{overtime.id}}" value=1 checked>出</label>
+                  <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=0>休</label>
                   {% endif %}
-                </label>
               </td>
               <td>
                 {{ overtime.date }}
@@ -62,7 +66,18 @@
                 {% endif %}
               </td>
               <td>
-                <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}">
+                {% if overtime.time == 0 %}
+                <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="7">
+                {% else %}
+                <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="7" class="red">
+                {% endif %}
+              </td>
+              <td>
+                {% if overtime.holiday_time == 0 %}
+                <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="7">
+                {% else %}
+                <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="7"  class="blue">
+                {% endif %}
               </td>
               <td>
                 {{ overtime.total_time}}
@@ -80,7 +95,7 @@
 
   <a href="/create">データ作成</a>  
   <a href="/delete">データ削除</a>
-
+<!-- 
   <script>
     $(document).ready(function(){
       $('#new_text').keydown(function(e) {
@@ -90,7 +105,7 @@
         }
       });
     });
-  </script>  
+  </script>   -->
 </body>
 
 </html>

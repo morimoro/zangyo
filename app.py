@@ -14,12 +14,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zangyo.sqlite'
 db = SQLAlchemy(app)
 class Overtime(db.Model):
 
+    #データベースのテーブル名
     __tablename__ = "overtimes"
+    
+    #データベースの要素
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     status = db.Column(db.Integer)
     date = db.Column(db.String())
     weekday = db.Column(db.Integer)
     time = db.Column(db.Float())
+    holiday_time = db.Column(db.Float())
     total_time = db.Column(db.Float())
     time_36 = db.Column(db.Float())
 
@@ -30,19 +34,50 @@ def index():
             db.create_all()
         overtimes = Overtime.query.order_by(Overtime.date).all() # 日付を昇順に並べ替え
         db.session.commit()
-        return render_template("index.html", overtimes = overtimes)
+        scheduled_overtime = 0 #月間予定残業に初期値として0を代入
+        last_month_36_overtime = 0  #前月最終日36残業時間に初期値として0を代入
+        return render_template("index.html", overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime)
+
     else:
         print('update')
         date_count = Overtime.query.count() # データベースのデータ数
         print(date_count)
-        sum =0 
+
+        #月間予定残業を取得、未入力なら0を代入
+        try:
+            scheduled_overtime = float(request.form["scheduled_overtime"])
+        except:
+            scheduled_overtime = 0
+        
+        #前月最終日36残業時間を取得、未入力なら0を代入
+        try:
+            last_month_36_overtime = float(request.form["last_month_36_overtime"])
+            sum_36 = last_month_36_overtime 
+        except:
+            last_month_36_overtime = 0
+            sum_36 = db.session.query(Overtime).filter(Overtime.id==1).first().time_36 - db.session.query(Overtime).filter(Overtime.id==1).first().time
+
+        # データベースの回数だけ繰り返し、値を取得して月間残業、36残業を計算
+        sum = 0
         for i in range(date_count):
             overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
+            overtime.status = int(request.form["status_{}".format(i+1)])
             overtime.time = float(request.form["time_{}".format(i+1)])
-            overtime.total_time = sum + overtime.time
+            overtime.holiday_time = float(request.form["holiday_time_{}".format(i+1)])
+            overtime.total_time = sum + overtime.time + overtime.holiday_time
             sum = overtime.total_time
+            overtime.time_36 = sum_36 + overtime.time
+            # もし15日ならsum_36=0、16日は0から足し算開始
+            if datetime.datetime.strptime(overtime.date, '%Y-%m-%d').day == 15:
+                sum_36 = 0
+            else:
+                sum_36 = overtime.time_36
             db.session.commit()
-        return redirect(url_for('index'))
+        with app.app_context():
+            db.create_all()
+        overtimes = Overtime.query.order_by(Overtime.date).all() # 日付を昇順に並べ替え
+        db.session.commit()
+        return render_template("index.html", overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime)
 
 @app.route('/delete')
 def delete():
@@ -65,18 +100,23 @@ def create():
         last_date = datetime.datetime.strptime(last_date, '%Y-%m-%d') #型変換
         last_date = datetime.date(last_date.year, last_date.month, last_date.day) #年月日だけに変換
         print(create_date, last_date)
-        # print(type(create_date))
+
+        #31日分データ作成、ただし最終日でbreak
         for i in range(31):
             date = create_date + datetime.timedelta(days=i)
             overtime = [Overtime(
                 status = 0,
                 date = date,
                 weekday = date.weekday(),
-                time = 0, total_time = 0 ,time_36 = 0)] 
+                time = 0,
+                holiday_time = 0,
+                total_time = 0,
+                time_36 = 0)] 
             db.session.add_all(overtime)
             if date == last_date:
                 break
         db.session.commit()
+
         return redirect(url_for('index'))
 
 @app.route('/new', methods=["POST"])
