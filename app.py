@@ -51,14 +51,33 @@ def delete():
     db.session.commit()
     return redirect(url_for('index'))
 
-@app.route('/create', methods=["GET"])
+@app.route('/create', methods=["GET", "POST"])
 def create():
-    print('create')
-    # 2022/4/1から1日づつ30個データを作成　初期値は全て0
-    overtime = [Overtime(status = 0, date = datetime.date(2022, 4, i+1), weekday = datetime.date(2022, 4, i+1).weekday(), time = 0, total_time = 0 ,time_36 = 0) for i in range(30)] 
-    db.session.add_all(overtime)
-    db.session.commit()
-    return redirect(url_for('index'))
+    if request.method == 'GET':
+        print('create')
+        return render_template("create.html")
+    else:
+        print('create_date')
+        create_date = request.form["create_date"] #create_dateを読み込み
+        create_date = datetime.datetime.strptime(create_date, '%Y-%m-%d') #型変換
+        create_date = datetime.date(create_date.year, create_date.month, create_date.day) #年月日だけに変換
+        last_date = request.form["last_date"] #last_dateを読み込み
+        last_date = datetime.datetime.strptime(last_date, '%Y-%m-%d') #型変換
+        last_date = datetime.date(last_date.year, last_date.month, last_date.day) #年月日だけに変換
+        print(create_date, last_date)
+        # print(type(create_date))
+        for i in range(31):
+            date = create_date + datetime.timedelta(days=i)
+            overtime = [Overtime(
+                status = 0,
+                date = date,
+                weekday = date.weekday(),
+                time = 0, total_time = 0 ,time_36 = 0)] 
+            db.session.add_all(overtime)
+            if date == last_date:
+                break
+        db.session.commit()
+        return redirect(url_for('index'))
 
 @app.route('/new', methods=["POST"])
 def new():
