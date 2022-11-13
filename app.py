@@ -2,7 +2,6 @@
 
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
 # from sqlalchemy import desc #降順に並べ替えの時に必要
 import os
 import datetime

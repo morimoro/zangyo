@@ -50,14 +50,18 @@
                   {% if overtime.status == 0 %}
                   <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=1>出</label>
                   <label><input type="radio" name="status_{{overtime.id}}" value=0 checked>休</label>
+              </td>
+              <td class="gray">
+                {{ overtime.date }}
+              </td>
                   {% else %}
                   <label><input type="radio" name="status_{{overtime.id}}" value=1 checked>出</label>
                   <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=0>休</label>
-                  {% endif %}
               </td>
               <td>
                 {{ overtime.date }}
               </td>
+              {% endif %}
               <td>
                 {% if overtime.weekday == 0 %}月
                 {% elif overtime.weekday == 1 %}火
