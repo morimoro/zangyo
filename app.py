@@ -82,7 +82,9 @@ def create():
 @app.route('/new', methods=["POST"])
 def new():
     overtime = Overtime()
-    overtime.date = request.form["new_date"]
+    date = datetime.datetime.strptime(request.form["new_date"], '%Y-%m-%d') #型変換
+    overtime.date = datetime.date(date.year, date.month, date.day) #年月日だけに変換
+    overtime.weekday = date.weekday()
     overtime.time = float(request.form["new_text"])
     totals = db.session.query(Overtime.time).all()
     sum = 0
