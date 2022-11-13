@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 # from sqlalchemy import desc #降順に並べ替えの時に必要
 import os
 import datetime
@@ -27,6 +28,7 @@ class Overtime(db.Model):
     holiday_time = db.Column(db.Float())
     total_time = db.Column(db.Float())
     time_36 = db.Column(db.Float())
+    estimated_time = db.Column(db.Float())
 
 @app.route('/', methods=["GET", "POST"])
 def index():
@@ -37,7 +39,9 @@ def index():
         db.session.commit()
         scheduled_overtime = 0 #月間予定残業に初期値として0を代入
         last_month_36_overtime = 0  #前月最終日36残業時間に初期値として0を代入
-        return render_template("index.html", overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime)
+        working_days = 0 #月間稼働日に初期値として0を代入
+        return render_template("index.html",
+        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days)
 
     else:
         print('update')
@@ -78,7 +82,21 @@ def index():
             db.create_all()
         overtimes = Overtime.query.order_by(Overtime.date).all() # 日付を昇順に並べ替え
         db.session.commit()
-        return render_template("index.html", overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime)
+
+        working_days = db.session.query(Overtime).filter(Overtime.status==1).count()
+        ave_estimated_time = scheduled_overtime / working_days
+        sum_estimated_time = 0
+        for i in range(date_count):
+            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
+            if overtime.status == 1:
+                overtime.estimated_time = sum_estimated_time + ave_estimated_time
+                sum_estimated_time = overtime.estimated_time
+            else:
+                overtime.estimated_time = sum_estimated_time
+        db.session.commit()
+
+        return render_template("index.html",
+        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days)
 
 @app.route('/delete')
 def delete():
@@ -112,7 +130,8 @@ def create():
                 time = 0,
                 holiday_time = 0,
                 total_time = 0,
-                time_36 = 0)] 
+                time_36 = 0,
+                estimated_time = 0)] 
             db.session.add_all(overtime)
             if date == last_date:
                 break

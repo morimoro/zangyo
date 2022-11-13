@@ -14,16 +14,17 @@
 
 <body>
   <main>
-    <div id="title" class="title">残業時間</div>
+    <div id="title" class="title">残業時間計算webアプリ</div>
     <form name="f" method="post">
       <!-- <div class="text_area">
         <input type="date" name="new_date" id="new_date">
         <input type="number" name="new_text" id="new_text">
       </div> -->
       月間予定残業
-      <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}">hr<br>
+      <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}" size="7">hr<br>
       前月最終日36残業時間
-      <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}">hr<br>
+      <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}" size="7">hr<br>
+      月間稼働日数{{ working_days }}日<br>
       <table>
         <thead>
           <tr>
@@ -33,8 +34,10 @@
             <th>曜日</th>
             <th>残業時間</th>
             <th>休日残業</th>
-            <th>月間残業</th>
             <th>36残業</th>
+            <th>月間残業</th>
+            <th>理想</th>
+            <th>ペース</th>
           </tr>
         </thead>
         <tbody>
@@ -80,10 +83,22 @@
                 {% endif %}
               </td>
               <td>
+                {{ overtime.time_36}}
+              </td>
+              <td>
                 {{ overtime.total_time}}
               </td>
               <td>
-                {{ overtime.time_36}}
+                {{ '{:.2f}'.format(overtime.estimated_time) }}
+              </td>
+              <td>
+                {% if overtime.total_time - overtime.estimated_time > 0 %}
+                <span class="red">{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
+                {% elif overtime.total_time - overtime.estimated_time == 0 %}
+                <span>{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
+                {% else %}
+                <span class="blue">{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
+                {% endif %}
               </td>
             </tr>
           {% endfor %}
