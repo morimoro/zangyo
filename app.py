@@ -1,3 +1,5 @@
+#残業を管理するアプリ
+
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 # from sqlalchemy import desc #降順に並べ替えの時に必要
@@ -16,7 +18,6 @@ class Overtime(db.Model):
 
     #データベースのテーブル名
     __tablename__ = "overtimes"
-    
     #データベースの要素
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     status = db.Column(db.Integer)
