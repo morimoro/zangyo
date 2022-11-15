@@ -14,10 +14,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zangyo.sqlite'
 
 # データベースの作成
 db = SQLAlchemy(app)
+
+name = "test"
+
 class Overtime(db.Model):
 
     #データベースのテーブル名
-    __tablename__ = "overtimes"
+    __tablename__ = name
     #データベースの要素
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     status = db.Column(db.Integer)
@@ -60,7 +63,7 @@ def index():
         working_days = 0
 
         #日付を昇順に並べ替え
-        overtimes = Overtime.query.order_by(Overtime.date).all() 
+        overtimes = Overtime.query.order_by(Overtime.date).all()
         db.session.commit()
 
         return render_template("index.html",
@@ -124,6 +127,9 @@ def index():
         overtimes = Overtime.query.order_by(Overtime.date).all()
         db.session.commit()
 
+        test =Overtime.query.all()
+        db.session.commit()
+
         return render_template("index.html",
         overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days)
 
@@ -167,6 +173,63 @@ def create():
         db.session.commit()
 
         return redirect(url_for('index'))
+
+
+
+
+
+@app.route('/test', methods=["GET"])
+def test():
+    if request.method == 'GET':
+            
+        class Overtime(db.Model):
+
+            #データベースのテーブル名
+            __table_args__ = {'extend_existing': True}
+            __tablename__ = "test2"
+            #データベースの要素
+            id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+            status = db.Column(db.Integer)
+            date = db.Column(db.String())
+            weekday = db.Column(db.Integer)
+            time = db.Column(db.Float())
+            holiday_time = db.Column(db.Float())
+            total_time = db.Column(db.Float())
+            time_36 = db.Column(db.Float())
+            estimated_time = db.Column(db.Float())
+
+        with app.app_context():
+                db.create_all()
+
+        #データベースのデータ数
+        date_count = Overtime.query.count()
+        print(date_count)
+
+        #月間予定残業に最終日の理想残業時間を代入
+        #データがなければ初期値として0を代入
+        try:
+            overtime = db.session.query(Overtime).filter(Overtime.id==date_count).first()
+            scheduled_overtime = overtime.estimated_time
+        except:
+            scheduled_overtime = 0
+        
+        #前月最終日36残業時間に36残業-残業時間を代入
+        #データベースがなければ初期値として0を代入
+        try:
+            overtime = db.session.query(Overtime).filter(Overtime.id==1).first()
+            last_month_36_overtime = overtime.time_36 - overtime.time
+        except:
+            last_month_36_overtime = 0
+        
+        #月間稼働日に初期値として0を代入
+        working_days = 0
+
+        #日付を昇順に並べ替え
+        overtimes = Overtime.query.order_by(Overtime.date).all()
+        db.session.commit()
+
+        return render_template("index.html",
+        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days)
 
 # @app.route('/new', methods=["POST"])
 # def new():
