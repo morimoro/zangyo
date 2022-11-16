@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zangyo.sqlite'
 # データベースの作成
 db = SQLAlchemy(app)
 
-name = "test"
+name = "overtime"
 
 class Overtime(db.Model):
 
@@ -35,6 +35,7 @@ class Overtime(db.Model):
 with app.app_context():
         db.create_all()
 
+########################################################################
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == 'GET':
@@ -127,12 +128,10 @@ def index():
         overtimes = Overtime.query.order_by(Overtime.date).all()
         db.session.commit()
 
-        test =Overtime.query.all()
-        db.session.commit()
-
         return render_template("index.html",
         overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days)
 
+########################################################################
 @app.route('/delete')
 def delete():
     # Overtimeデータベース削除
@@ -140,6 +139,7 @@ def delete():
     db.session.commit()
     return redirect(url_for('index'))
 
+########################################################################
 @app.route('/create', methods=["GET", "POST"])
 def create():
     if request.method == 'GET':
@@ -174,19 +174,25 @@ def create():
 
         return redirect(url_for('index'))
 
-
-
-
-
-@app.route('/test', methods=["GET"])
-def test():
+########################################################################
+@app.route('/user', methods=["GET", "POST"])
+def user():
     if request.method == 'GET':
-            
+        return render_template("user.html")
+
+    else:
+        user_name = request.form["user_name"]
+        return redirect(url_for('user_name', user_name=user_name))
+
+########################################################################
+@app.route('/<user_name>', methods=["GET", "POST"])
+def user_name(user_name):
+    if request.method == 'GET': 
         class Overtime(db.Model):
 
             #データベースのテーブル名
             __table_args__ = {'extend_existing': True}
-            __tablename__ = "test2"
+            __tablename__ = user_name
             #データベースの要素
             id = db.Column(db.Integer, primary_key=True, autoincrement=True)
             status = db.Column(db.Integer)
