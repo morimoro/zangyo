@@ -1,123 +1,121 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "base.html" %}
 
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet"  href="/static/css/style.css">
-  <title>残業管理アプリ</title>
-  <script
-  src="https://code.jquery.com/jquery-3.5.1.js"
-  integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
-  crossorigin="anonymous">
-  </script>
-</head>
+{% block head %}
+{% endblock %}
 
-<body>
-  <main>
-    <div id="title" class="title">残業時間計算webアプリ</div>
-    <form name="f" method="post">
-      <!-- <div class="text_area">
-        <input type="date" name="new_date" id="new_date">
-        <input type="number" name="new_text" id="new_text">
-      </div> -->
-      月間予定残業
-      <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}" size="7">hr<br>
-      前月最終日36残業時間
-      <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}" size="7">hr<br>
-      月間稼働日数{{ working_days }}日<br>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>出勤日</th>
-            <th>日付</th>
-            <th>曜日</th>
-            <th>残業時間</th>
-            <th>休日残業</th>
-            <th>36残業</th>
-            <th>月間残業</th>
-            <th>理想</th>
-            <th>ペース</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for overtime in overtimes %}
-            <tr>
-              <td>
-                {{ overtime.id }}
-              </td>
-              <td>
-                  {% if overtime.status == 0 %}
-                  <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=1>出</label>
-                  <label><input type="radio" name="status_{{overtime.id}}" value=0 checked>休</label>
-              </td>
-              <td class="gray">
-                {{ overtime.date }}
-              </td>
-                  {% else %}
-                  <label><input type="radio" name="status_{{overtime.id}}" value=1 checked>出</label>
-                  <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=0>休</label>
-              </td>
-              <td>
-                {{ overtime.date }}
-              </td>
-              {% endif %}
-              <td>
-                {% if overtime.weekday == 0 %}月
-                {% elif overtime.weekday == 1 %}火
-                {% elif overtime.weekday == 2 %}水
-                {% elif overtime.weekday == 3 %}木
-                {% elif overtime.weekday == 4 %}金
-                {% elif overtime.weekday == 5 %}土
-                {% elif overtime.weekday == 6 %}日
-                {% endif %}
-              </td>
-              <td>
-                {% if overtime.time == 0 %}
-                <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="7">
-                {% else %}
-                <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="7" class="red">
-                {% endif %}
-              </td>
-              <td>
-                {% if overtime.holiday_time == 0 %}
-                <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="7">
-                {% else %}
-                <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="7"  class="blue">
-                {% endif %}
-              </td>
-              <td>
-                {{ overtime.time_36}}
-              </td>
-              <td>
-                {{ overtime.total_time}}
-              </td>
-              <td>
-                {{ '{:.2f}'.format(overtime.estimated_time) }}
-              </td>
-              <td>
-                {% if overtime.total_time - overtime.estimated_time > 0 %}
-                <span class="red">{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
-                {% elif overtime.total_time - overtime.estimated_time == 0 %}
-                <span>{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
-                {% else %}
-                <span class="blue">{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <input type="submit" value="更新">
-    </form>
-  </main>
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-7">
+      <main>
+        <div id="title" class="title">残業時間計算webアプリ</div>
+        <form name="f" method="post">
+          <!-- <div class="text_area">
+            <input type="date" name="new_date" id="new_date">
+            <input type="number" name="new_text" id="new_text">
+          </div> -->
+          月間予定残業
+          <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}" size="7">hr<br>
+          前月最終日36残業時間
+          <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}" size="7">hr<br>
+          月間稼働日数{{ working_days }}日<br>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>出勤日</th>
+                <th>日付</th>
+                <th>曜日</th>
+                <th>残業時間</th>
+                <th>休日残業</th>
+                <th>36残業</th>
+                <th>月間残業</th>
+                <th>理想</th>
+                <th>ペース</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for overtime in overtimes %}
+                <tr>
+                  <td>
+                    {{ overtime.id }}
+                  </td>
+                  <td>
+                      {% if overtime.status == 0 %}
+                      <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=1>出</label>
+                      <label><input type="radio" name="status_{{overtime.id}}" value=0 checked>休</label>
+                  </td>
+                  <td class="gray">
+                    {{ overtime.date }}
+                  </td>
+                      {% else %}
+                      <label><input type="radio" name="status_{{overtime.id}}" value=1 checked>出</label>
+                      <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=0>休</label>
+                  </td>
+                  <td>
+                    {{ overtime.date }}
+                  </td>
+                  {% endif %}
+                  <td>
+                    {% if overtime.weekday == 0 %}月
+                    {% elif overtime.weekday == 1 %}火
+                    {% elif overtime.weekday == 2 %}水
+                    {% elif overtime.weekday == 3 %}木
+                    {% elif overtime.weekday == 4 %}金
+                    {% elif overtime.weekday == 5 %}土
+                    {% elif overtime.weekday == 6 %}日
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if overtime.time == 0 %}
+                    <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="7">
+                    {% else %}
+                    <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="7" class="red">
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if overtime.holiday_time == 0 %}
+                    <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="7">
+                    {% else %}
+                    <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="7"  class="blue">
+                    {% endif %}
+                  </td>
+                  <td>
+                    {{ overtime.time_36}}
+                  </td>
+                  <td>
+                    {{ overtime.total_time}}
+                  </td>
+                  <td>
+                    {{ '{:.2f}'.format(overtime.estimated_time) }}
+                  </td>
+                  <td>
+                    {% if overtime.total_time - overtime.estimated_time > 0 %}
+                    <span class="red">{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
+                    {% elif overtime.total_time - overtime.estimated_time == 0 %}
+                    <span>{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
+                    {% else %}
+                    <span class="blue">{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <input type="submit" value="更新">
+        </form>
+      </main>
+    </div>
+    <div class="col-5">
+      <br><br><br><br>
+      <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+  </div>
+</div>
 
   <a href="/create">データ作成</a>  
   <a href="/delete">データ削除</a>
-
-  <div>
-    <canvas id="myChart"></canvas>
-  </div>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
@@ -152,6 +150,4 @@
       }
     });
   </script>
-</body>
-
-</html>
+{% endblock %}
