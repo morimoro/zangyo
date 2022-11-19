@@ -5,7 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 # from sqlalchemy import desc #降順に並べ替えの時に必要
 import os
 import datetime
-import json
 
 print("run")
 
@@ -245,52 +244,18 @@ def user_name(user_name):
         with app.app_context():
                 db.create_all()
 
-        #データベースのデータ数
-        date_count = Overtime.query.count()
-        print(date_count)
+        return render_template("home.html")
+    
+    else:
+        user_name = request.form["user_name"]
+        return redirect(url_for('home', user_name=user_name))
 
-        #月間予定残業に最終日の理想残業時間を代入
-        #データがなければ初期値として0を代入
-        try:
-            overtime = db.session.query(Overtime).filter(Overtime.id==date_count).first()
-            scheduled_overtime = overtime.estimated_time
-        except:
-            scheduled_overtime = 0
-        
-        #前月最終日36残業時間に36残業-残業時間を代入
-        #データベースがなければ初期値として0を代入
-        try:
-            overtime = db.session.query(Overtime).filter(Overtime.id==1).first()
-            last_month_36_overtime = overtime.time_36 - overtime.time
-        except:
-            last_month_36_overtime = 0
-        
-        #月間稼働日に初期値として0を代入
-        working_days = 0
-
-        #日付を昇順に並べ替え
-        overtimes = Overtime.query.order_by(Overtime.date).all()
-        db.session.commit()
-
-        return render_template("index.html",
-        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days)
-
-# @app.route('/new', methods=["POST"])
-# def new():
-#     overtime = Overtime()
-#     date = datetime.datetime.strptime(request.form["new_date"], '%Y-%m-%d') #型変換
-#     overtime.date = datetime.date(date.year, date.month, date.day) #年月日だけに変換
-#     overtime.weekday = date.weekday()
-#     overtime.time = float(request.form["new_text"])
-#     totals = db.session.query(Overtime.time).all()
-#     sum = 0
-#     for total in totals:
-#         sum = sum + total[0]
-#     overtime.total_time = sum + overtime.time
-#     overtime.status = 0
-#     overtime.time_36 = 1
-#     db.session.add(overtime)
-#     db.session.commit()
-#     return redirect(url_for('index'))
+########################################################################
+@app.route('/home/<user_name>', methods=["GET", "POST"])
+def home(user_name):
+    if request.method == "GET":
+        return render_template("index.html")
+    else:
+        pass
 
 app.run(debug=True, host=os.getenv('APP_ADDRESS', 'localhost'), port=8001)
