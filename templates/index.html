@@ -8,7 +8,7 @@
 <div class="container">
   <div class="row">
     <div class="col-7">
-      <main>
+      <main class="center">
         <form name="f" method="post">
           <!-- <div class="text_area">
             <input type="date" name="new_date" id="new_date">
@@ -28,8 +28,8 @@
                 <th></th>
                 <th>残業時間</th>
                 <th>休日残業</th>
-                <th>36残業</th>
-                <th>月間残業</th>
+                <th>36残</th>
+                <th>月残</th>
                 <th>理想</th>
                 <th>ペース</th>
               </tr>
@@ -62,8 +62,8 @@
                     {% elif overtime.weekday == 2 %}水
                     {% elif overtime.weekday == 3 %}木
                     {% elif overtime.weekday == 4 %}金
-                    {% elif overtime.weekday == 5 %}土
-                    {% elif overtime.weekday == 6 %}日
+                    {% elif overtime.weekday == 5 %}<span class="blue">土</span>
+                    {% elif overtime.weekday == 6 %}<span class="red">日</span>
                     {% endif %}
                   </td>
                   <td>
@@ -107,7 +107,7 @@
       </main>
     </div>
     <div class="col-5">
-      <br><br><br><br>
+      <br>
       <canvas id="myChart" width="400" height="400"></canvas>
     </div>
   </div>

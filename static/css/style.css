@@ -1,4 +1,4 @@
-table {
+main {
     font-size: small;
     text-align: center;
 }
@@ -21,4 +21,9 @@ table {
 
 .center {
     text-align: center;
+}
+
+.container {
+    margin: 0px 5px;
+    padding:0;
 }
