@@ -61,8 +61,8 @@ def index():
         except:
             last_month_36_overtime = 0
         
-        #月間稼働日に初期値として0を代入
-        working_days = 0
+        #出勤日をカウントして月間稼働日数とする
+        working_days = db.session.query(Overtime).filter(Overtime.status==1).count()
 
         #日付を昇順に並べ替え
         overtimes = Overtime.query.order_by(Overtime.date).all()
@@ -93,13 +93,13 @@ def index():
 
         #月間予定残業を取得、未入力なら0を代入
         try:
-            scheduled_overtime = float(request.form["scheduled_overtime"])
+            scheduled_overtime = float(request.form["scheduled_overtime"] or "0")
         except:
             scheduled_overtime = 0
         
         #前月最終日36残業時間を取得、未入力なら0を代入
         try:
-            last_month_36_overtime = float(request.form["last_month_36_overtime"])
+            last_month_36_overtime = float(request.form["last_month_36_overtime"] or "0")
             sum_36 = last_month_36_overtime 
         except:
             last_month_36_overtime = 0
@@ -111,8 +111,8 @@ def index():
         for i in range(date_count):
             overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
             overtime.status = int(request.form["status_{}".format(i+1)])
-            overtime.time = float(request.form["time_{}".format(i+1)])
-            overtime.holiday_time = float(request.form["holiday_time_{}".format(i+1)])
+            overtime.time = float(request.form["time_{}".format(i+1)] or "0")
+            overtime.holiday_time = float(request.form["holiday_time_{}".format(i+1)] or "0")
             overtime.total_time = sum + overtime.time + overtime.holiday_time
             sum = overtime.total_time
             overtime.time_36 = sum_36 + overtime.time

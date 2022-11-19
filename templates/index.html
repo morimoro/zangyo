@@ -1,32 +1,31 @@
 {% extends "base.html" %}
 
 {% block head %}
+<link rel="stylesheet" href="/static/css/style.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="container">
   <div class="row">
     <div class="col-7">
       <main>
-        <div id="title" class="title">残業時間計算webアプリ</div>
         <form name="f" method="post">
           <!-- <div class="text_area">
             <input type="date" name="new_date" id="new_date">
             <input type="number" name="new_text" id="new_text">
           </div> -->
           月間予定残業
-          <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}" size="7">hr<br>
+          <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}" size="2">hr、
           前月最終日36残業時間
-          <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}" size="7">hr<br>
-          月間稼働日数{{ working_days }}日<br>
-          <table>
-            <thead>
+          <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}" size="2">hr<br>
+          月間稼働日数 <span class="bold">{{ working_days }}日</span><br>
+          <table class="table table-sm table-striped">
+            <thead class="table-dark">
               <tr>
                 <th>ID</th>
                 <th>出勤日</th>
                 <th>日付</th>
-                <th>曜日</th>
+                <th></th>
                 <th>残業時間</th>
                 <th>休日残業</th>
                 <th>36残業</th>
@@ -69,16 +68,16 @@
                   </td>
                   <td>
                     {% if overtime.time == 0 %}
-                    <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="7">
+                    <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="3" class="gray">
                     {% else %}
-                    <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="7" class="red">
+                    <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="3">
                     {% endif %}
                   </td>
                   <td>
                     {% if overtime.holiday_time == 0 %}
-                    <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="7">
+                    <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="3" class="gray">
                     {% else %}
-                    <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="7"  class="blue">
+                    <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="3">
                     {% endif %}
                   </td>
                   <td>
@@ -103,7 +102,7 @@
               {% endfor %}
             </tbody>
           </table>
-          <input type="submit" value="更新">
+          <input type="submit" value="更新" class="center">
         </form>
       </main>
     </div>
@@ -114,9 +113,6 @@
   </div>
 </div>
 
-  <a href="/create">データ作成</a>  
-  <a href="/delete">データ削除</a>
-  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const ctx = document.getElementById('myChart');

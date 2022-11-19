@@ -1,10 +1,6 @@
 table {
-    border-collapse: collapse;
-    border-spacing: 0px 5px;
-}
-
-th,td {
-    border: solid 1px;              /* 枠線指定 */
+    font-size: small;
+    text-align: center;
 }
 
 .red {
@@ -16,5 +12,13 @@ th,td {
 }
 
 .gray {
-    color: gray;
+    color: silver;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.center {
+    text-align: center;
 }
