@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 # from sqlalchemy import desc #降順に並べ替えの時に必要
 import os
 import datetime
+import json
 
 print("run")
 
@@ -67,8 +68,21 @@ def index():
         overtimes = Overtime.query.order_by(Overtime.date).all()
         db.session.commit()
 
+        #残業時間をリスト化
+        date_list = []
+        total_time_list = []
+        estimated_time_list = []
+        time_36_list = []
+        for i in range(date_count):
+            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
+            date_list.append(overtime.date)
+            total_time_list.append(overtime.total_time)
+            estimated_time_list.append(overtime.estimated_time)
+            time_36_list.append(overtime.time_36)
+
         return render_template("index.html",
-        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days)
+        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days,
+        date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list)
 
     else:
         print('update')
@@ -128,8 +142,21 @@ def index():
         overtimes = Overtime.query.order_by(Overtime.date).all()
         db.session.commit()
 
+        #残業時間をリスト化
+        date_list = []
+        total_time_list = []
+        estimated_time_list = []
+        time_36_list = []
+        for i in range(date_count):
+            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
+            date_list.append(overtime.date)
+            total_time_list.append(overtime.total_time)
+            estimated_time_list.append(overtime.estimated_time)
+            time_36_list.append(overtime.time_36)
+
         return render_template("index.html",
-        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days)
+        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days,
+        date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list)
 
 ########################################################################
 @app.route('/delete')
@@ -158,15 +185,26 @@ def create():
         #31日分データ作成、ただし最終日でbreak
         for i in range(31):
             date = create_date + datetime.timedelta(days=i)
-            overtime = [Overtime(
-                status = 0,
-                date = date,
-                weekday = date.weekday(),
-                time = 0,
-                holiday_time = 0,
-                total_time = 0,
-                time_36 = 0,
-                estimated_time = 0)] 
+            if date.weekday() == 5 or date.weekday() ==6:
+                overtime = [Overtime(
+                    status = 0,
+                    date = date,
+                    weekday = date.weekday(),
+                    time = 0,
+                    holiday_time = 0,
+                    total_time = 0,
+                    time_36 = 0,
+                    estimated_time = 0)] 
+            else :
+                overtime = [Overtime(
+                    status = 1,
+                    date = date,
+                    weekday = date.weekday(),
+                    time = 0,
+                    holiday_time = 0,
+                    total_time = 0,
+                    time_36 = 0,
+                    estimated_time = 0)] 
             db.session.add_all(overtime)
             if date == last_date:
                 break

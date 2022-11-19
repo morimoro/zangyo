@@ -114,17 +114,44 @@
 
   <a href="/create">データ作成</a>  
   <a href="/delete">データ削除</a>
-<!-- 
+
+  <div>
+    <canvas id="myChart"></canvas>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    $(document).ready(function(){
-      $('#new_text').keydown(function(e) {
-        if (e.keyCode == 13) {
-          $('form[name="f"]').attr('action', '/new')
-          $('form[name="f"]').submit();
+    const ctx = document.getElementById('myChart');
+  
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: {{ date_list|safe }},
+        datasets: [{
+          label: '月間残業時間',
+          data: {{ total_time_list|safe }},
+          borderWidth: 1
+        },
+        {
+          label: '理想',
+          data: {{ estimated_time_list|safe }},
+          borderWidth: 1
+        },
+        {
+          label: '36残業',
+          data: {{ time_36_list|safe }},
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
-      });
+      }
     });
-  </script>   -->
+  </script>
 </body>
 
 </html>
