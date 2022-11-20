@@ -15,25 +15,25 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zangyo.sqlite'
 # データベースの作成
 db = SQLAlchemy(app)
 
-# name = "overtime"
+name = "overtime"
 
-# class Overtime(db.Model):
+class Overtime(db.Model):
 
-#     #データベースのテーブル名
-#     __tablename__ = name
-#     #データベースの要素
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     status = db.Column(db.Integer)
-#     date = db.Column(db.String())
-#     weekday = db.Column(db.Integer)
-#     time = db.Column(db.Float())
-#     holiday_time = db.Column(db.Float())
-#     total_time = db.Column(db.Float())
-#     time_36 = db.Column(db.Float())
-#     estimated_time = db.Column(db.Float())
+    #データベースのテーブル名
+    __tablename__ = name
+    #データベースの要素
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    status = db.Column(db.Integer)
+    date = db.Column(db.String())
+    weekday = db.Column(db.Integer)
+    time = db.Column(db.Float())
+    holiday_time = db.Column(db.Float())
+    total_time = db.Column(db.Float())
+    time_36 = db.Column(db.Float())
+    estimated_time = db.Column(db.Float())
 
-# with app.app_context():
-#         db.create_all()
+with app.app_context():
+        db.create_all()
 
 ########################################################################
 @app.route('/', methods=["GET", "POST"])
