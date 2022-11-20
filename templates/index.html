@@ -1,149 +1,45 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>残業管理アプリ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/footer.css">
+    <link href="/static/css/index.css" rel="stylesheet">
+</head>
 
-{% block head %}
-<link rel="stylesheet" href="/static/css/style.css">
-{% endblock %}
+<body  class="text-center" >
+  <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+      <div class="inner">
+        <h3 class="masthead-brand">Overtime APP</h3>
+        <nav class="nav nav-masthead justify-content-center">
+          <a class="nav-link active" href="/">Home</a>
+          <a class="nav-link" href="/user">User create</a>
+          <a class="nav-link" href="/user_name">User login</a>
+        </nav>
+      </div>
+    </header>
 
-{% block body %}
-<div class="container">
-  <div class="row">
-    <div class="col-7">
-      <main class="center">
-        <form name="f" method="post">
-          <!-- <div class="text_area">
-            <input type="date" name="new_date" id="new_date">
-            <input type="number" name="new_text" id="new_text">
-          </div> -->
-          月間予定残業
-          <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}" size="2">hr、
-          前月最終日36残業時間
-          <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}" size="2">hr<br>
-          月間稼働日数 <span class="bold">{{ working_days }}日</span><br>
-          <table class="table table-sm table-striped">
-            <thead class="table-dark">
-              <tr>
-                <th>ID</th>
-                <th>出勤日</th>
-                <th>日付</th>
-                <th></th>
-                <th>残業時間</th>
-                <th>休日残業</th>
-                <th>36残</th>
-                <th>月残</th>
-                <th>理想</th>
-                <th>ペース</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for overtime in overtimes %}
-                <tr>
-                  <td>
-                    {{ overtime.id }}
-                  </td>
-                  <td>
-                      {% if overtime.status == 0 %}
-                      <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=1>出</label>
-                      <label><input type="radio" name="status_{{overtime.id}}" value=0 checked>休</label>
-                  </td>
-                  <td class="gray">
-                    {{ overtime.date }}
-                  </td>
-                      {% else %}
-                      <label><input type="radio" name="status_{{overtime.id}}" value=1 checked>出</label>
-                      <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=0>休</label>
-                  </td>
-                  <td>
-                    {{ overtime.date }}
-                  </td>
-                  {% endif %}
-                  <td>
-                    {% if overtime.weekday == 0 %}月
-                    {% elif overtime.weekday == 1 %}火
-                    {% elif overtime.weekday == 2 %}水
-                    {% elif overtime.weekday == 3 %}木
-                    {% elif overtime.weekday == 4 %}金
-                    {% elif overtime.weekday == 5 %}<span class="blue">土</span>
-                    {% elif overtime.weekday == 6 %}<span class="red">日</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if overtime.time == 0 %}
-                    <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="3" class="gray">
-                    {% else %}
-                    <input type="text" value="{{ overtime.time }}" name = "time_{{overtime.id}}" id="time_{{overtime.id}}" size="3">
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if overtime.holiday_time == 0 %}
-                    <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="3" class="gray">
-                    {% else %}
-                    <input type="text" value="{{ overtime.holiday_time }}" name = "holiday_time_{{overtime.id}}" id="holiday_time_{{overtime.id}}" size="3">
-                    {% endif %}
-                  </td>
-                  <td>
-                    {{ overtime.time_36}}
-                  </td>
-                  <td>
-                    {{ overtime.total_time}}
-                  </td>
-                  <td>
-                    {{ '{:.2f}'.format(overtime.estimated_time) }}
-                  </td>
-                  <td>
-                    {% if overtime.total_time - overtime.estimated_time > 0 %}
-                    <span class="red">{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
-                    {% elif overtime.total_time - overtime.estimated_time == 0 %}
-                    <span>{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
-                    {% else %}
-                    <span class="blue">{{ '{:.2f}'.format(overtime.total_time - overtime.estimated_time) }}</span>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <input type="submit" value="更新" class="center">
-        </form>
-      </main>
-    </div>
-    <div class="col-5">
-      <br>
-      <canvas id="myChart" width="400" height="400"></canvas>
-    </div>
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Overtime APP 残業管理アプリ</h1>
+      <p class="lead">36残業と月間残業の管理にうんざりしていませんか？<br>そんなあなたに計画的な残業生活を提供します</p>
+      <p class="lead">
+        <a href="/user" class="btn btn-lg btn-secondary">User create</a>　
+        <a href="/user_name" class="btn btn-lg btn-secondary">User login</a>
+      </p>
+    </main>
+
+    <footer class="mastfoot mt-auto">
+      <div class="inner">
+        <div class="container">
+          <p class="text-muted">© 2022 morimoro  |  It is free for use</p>
+        </div>
+      </div>
+    </footer>
   </div>
-</div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const ctx = document.getElementById('myChart');
-  
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: {{ date_list|safe }},
-        datasets: [{
-          label: '月間残業時間',
-          data: {{ total_time_list|safe }},
-          borderWidth: 1
-        },
-        {
-          label: '理想',
-          data: {{ estimated_time_list|safe }},
-          borderWidth: 1
-        },
-        {
-          label: '36残業',
-          data: {{ time_36_list|safe }},
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  </script>
-{% endblock %}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>
