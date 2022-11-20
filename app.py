@@ -10,221 +10,26 @@ print("run")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zangyo.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///overtime.sqlite'
 
 # データベースの作成
 db = SQLAlchemy(app)
 
-name = "overtime"
-
-class Overtime(db.Model):
-
-    #データベースのテーブル名
-    __tablename__ = name
-    #データベースの要素
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    status = db.Column(db.Integer)
-    date = db.Column(db.String())
-    weekday = db.Column(db.Integer)
-    time = db.Column(db.Float())
-    holiday_time = db.Column(db.Float())
-    total_time = db.Column(db.Float())
-    time_36 = db.Column(db.Float())
-    estimated_time = db.Column(db.Float())
-
-with app.app_context():
-        db.create_all()
-
 ########################################################################
-@app.route('/', methods=["GET", "POST"])
+@app.route('/', methods=["GET"])
 def index():
     if request.method == 'GET':
-
-        #データベースのデータ数
-        date_count = Overtime.query.count()
-        print(date_count)
-
-        #月間予定残業に最終日の理想残業時間を代入
-        #データがなければ初期値として0を代入
-        try:
-            overtime = db.session.query(Overtime).filter(Overtime.id==date_count).first()
-            scheduled_overtime = overtime.estimated_time
-        except:
-            scheduled_overtime = 0
-        
-        #前月最終日36残業時間に36残業-残業時間を代入
-        #データベースがなければ初期値として0を代入
-        try:
-            overtime = db.session.query(Overtime).filter(Overtime.id==1).first()
-            last_month_36_overtime = overtime.time_36 - overtime.time
-        except:
-            last_month_36_overtime = 0
-        
-        #出勤日をカウントして月間稼働日数とする
-        working_days = db.session.query(Overtime).filter(Overtime.status==1).count()
-
-        #日付を昇順に並べ替え
-        overtimes = Overtime.query.order_by(Overtime.date).all()
-        db.session.commit()
-
-        #残業時間をリスト化
-        date_list = []
-        total_time_list = []
-        estimated_time_list = []
-        time_36_list = []
-        for i in range(date_count):
-            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
-            date_list.append(overtime.date)
-            total_time_list.append(overtime.total_time)
-            estimated_time_list.append(overtime.estimated_time)
-            time_36_list.append(overtime.time_36)
-
-        return render_template("index.html",
-        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days,
-        date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list)
-
-    else:
-        print('update')
-
-        #データベースのデータ数
-        date_count = Overtime.query.count()
-        print(date_count)
-
-        #月間予定残業を取得、未入力なら0を代入
-        try:
-            scheduled_overtime = float(request.form["scheduled_overtime"] or "0")
-        except:
-            scheduled_overtime = 0
-        
-        #前月最終日36残業時間を取得、未入力なら0を代入
-        try:
-            last_month_36_overtime = float(request.form["last_month_36_overtime"] or "0")
-            sum_36 = last_month_36_overtime 
-        except:
-            last_month_36_overtime = 0
-            overtime = db.session.query(Overtime).filter(Overtime.id==1).first()
-            sum_36 = overtime.time_36 - overtime.time
-
-        # データベースの回数だけ繰り返し、値を取得して月間残業、36残業を計算
-        sum = 0
-        for i in range(date_count):
-            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
-            overtime.status = int(request.form["status_{}".format(i+1)])
-            overtime.time = float(request.form["time_{}".format(i+1)] or "0")
-            overtime.holiday_time = float(request.form["holiday_time_{}".format(i+1)] or "0")
-            overtime.total_time = sum + overtime.time + overtime.holiday_time
-            sum = overtime.total_time
-            overtime.time_36 = sum_36 + overtime.time
-            # もし15日ならsum_36=0、16日は0から足し算開始
-            if datetime.datetime.strptime(overtime.date, '%Y-%m-%d').day == 15:
-                sum_36 = 0
-            else:
-                sum_36 = overtime.time_36
-        db.session.commit()
-
-        #出勤日をカウントして月間稼働日数とする
-        working_days = db.session.query(Overtime).filter(Overtime.status==1).count()
-        #毎日の平均残業時間 = 月間予定残業 / 月間稼働日数
-        ave_estimated_time = scheduled_overtime / working_days
-        sum_estimated_time = 0
-        #出勤日の場合、理想残業時間に毎日の平均残業時間を加算
-        for i in range(date_count):
-            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
-            if overtime.status == 1:
-                overtime.estimated_time = sum_estimated_time + ave_estimated_time
-                sum_estimated_time = overtime.estimated_time
-            else:
-                overtime.estimated_time = sum_estimated_time
-        db.session.commit()
-
-        #日付を昇順に並べ替え
-        overtimes = Overtime.query.order_by(Overtime.date).all()
-        db.session.commit()
-
-        #残業時間をリスト化
-        date_list = []
-        total_time_list = []
-        estimated_time_list = []
-        time_36_list = []
-        for i in range(date_count):
-            overtime = db.session.query(Overtime).filter(Overtime.id==(i+1)).first()
-            date_list.append(overtime.date)
-            total_time_list.append(overtime.total_time)
-            estimated_time_list.append(overtime.estimated_time)
-            time_36_list.append(overtime.time_36)
-
-        return render_template("index.html",
-        overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days,
-        date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list)
+        return render_template("index.html")
 
 ########################################################################
-@app.route('/delete')
-def delete():
-    # Overtimeデータベース削除
-    Overtime.query.delete()
-    db.session.commit()
-    return redirect(url_for('index'))
-
-########################################################################
-@app.route('/create', methods=["GET", "POST"])
-def create():
-    if request.method == 'GET':
-        print('create')
-        return render_template("create.html")
-    else:
-        print('create_date')
-        create_date = request.form["create_date"] #create_dateを読み込み
-        create_date = datetime.datetime.strptime(create_date, '%Y-%m-%d') #型変換
-        create_date = datetime.date(create_date.year, create_date.month, create_date.day) #年月日だけに変換
-        last_date = request.form["last_date"] #last_dateを読み込み
-        last_date = datetime.datetime.strptime(last_date, '%Y-%m-%d') #型変換
-        last_date = datetime.date(last_date.year, last_date.month, last_date.day) #年月日だけに変換
-        print(create_date, last_date)
-
-        #31日分データ作成、ただし最終日でbreak
-        for i in range(31):
-            date = create_date + datetime.timedelta(days=i)
-            if date.weekday() == 5 or date.weekday() ==6:
-                overtime = [Overtime(
-                    status = 0,
-                    date = date,
-                    weekday = date.weekday(),
-                    time = 0,
-                    holiday_time = 0,
-                    total_time = 0,
-                    time_36 = 0,
-                    estimated_time = 0)] 
-            else :
-                overtime = [Overtime(
-                    status = 1,
-                    date = date,
-                    weekday = date.weekday(),
-                    time = 0,
-                    holiday_time = 0,
-                    total_time = 0,
-                    time_36 = 0,
-                    estimated_time = 0)] 
-            db.session.add_all(overtime)
-            if date == last_date:
-                break
-        db.session.commit()
-
-        return redirect(url_for('index'))
-
-########################################################################
-@app.route('/user', methods=["GET", "POST"])
+@app.route('/user_create', methods=["GET", "POST"])
 def user():
     if request.method == 'GET':
-        return render_template("user.html")
+        return render_template("user_create.html")
 
     else:
         user_name = request.form["user_name"]
-        return redirect(url_for('user_name', user_name=user_name))
 
-########################################################################
-@app.route('/<user_name>', methods=["GET", "POST"])
-def user_name(user_name):
-    if request.method == 'GET': 
         class OvertimeUser(db.Model):
 
             #データベースのテーブル名
@@ -240,11 +45,17 @@ def user_name(user_name):
             total_time = db.Column(db.Float())
             time_36 = db.Column(db.Float())
             estimated_time = db.Column(db.Float())
-
+        
         with app.app_context():
-                db.create_all()
+            db.create_all()
 
-        return render_template("home.html")
+        return redirect(url_for('home', user_name=user_name))
+
+########################################################################
+@app.route('/user_login', methods=["GET", "POST"])
+def user_login():
+    if request.method == 'GET':
+        return render_template("user_login.html")
     
     else:
         user_name = request.form["user_name"]
@@ -408,7 +219,7 @@ def home(user_name):
 def create_user(user_name):
     if request.method == 'GET':
         print('create')
-        return render_template("create.html")
+        return render_template("create.html", user_name=user_name)
     else:
         print('create_date')
         create_date = request.form["create_date"] #create_dateを読み込み

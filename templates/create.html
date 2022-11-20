@@ -4,9 +4,21 @@
 {% endblock %}
 
 {% block body %}
-    <form name="create_date_form" method="post">
-        稼働日初日<input type="date" name="create_date" id="create_date"><br>
-        稼働日最終日<input type="date" name="last_date" id="last_date"><br>
-        <input type="submit" value="作成">
+    <form name="create_date_form" method="post" class="form-signin">
+        <div class="container mt-3 px-4 text-center justify-content-md-center  gx-5 ">
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="create_date" class="form-label">稼働日初日</label>
+                    <input type="date" name="create_date" id="create_date" required class="form-control" >
+                </div>
+                
+                <div class="mb-3 col">
+                    <label for="last_date" class="form-label">稼働最終日</label>
+                <input type="date" name="last_date" id="last_date" required class="form-control">
+                </div>
+            </div>
+                <button type="submit" class="btn btn-primary">作成
+                </button>
+        </div>
     </form>
 {% endblock %}
