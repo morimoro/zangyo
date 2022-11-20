@@ -5,7 +5,11 @@
 {% endblock %}
 
 {% block body %}
-ユーザー名：{{ user_name }}　<a href="/create/{{ user_name }}">データ作成</a>　<a href="/delete/{{ user_name }}">データ削除</a>
+<div class="center">
+  Usename:<span class="bold">{{ user_name }}</span>
+  <a href="/create/{{ user_name }}"><button type="button" class="btn btn-primary btn-sm">月間データ作成</button></a>
+  <a href="/delete/{{ user_name }}"><button type="button" class="btn btn-danger btn-sm">月間データ削除</button></a>
+</div>
 <div class="container">
   <div class="row">
     <div class="col-7">
