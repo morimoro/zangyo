@@ -5,24 +5,23 @@
 {% endblock %}
 
 {% block body %}
-<div class="center">
-  Usename:<span class="bold">{{ user_name }}</span>
-  <a href="/create/{{ user_name }}"><button type="button" class="btn btn-primary btn-sm">月間データ作成</button></a>
-  <a href="/delete/{{ user_name }}"><button type="button" class="btn btn-danger btn-sm">月間データ削除</button></a>
-</div>
+
+Usename:<span class="bold">{{ user_name }}</span>
+  {% if not overtimes %}
+    <a href="/create/{{ user_name }}"><button type="button" class="btn btn-primary btn-sm">月間データ作成</button></a>
+  {% else %}
+    <a href="/delete/{{ user_name }}"><button type="button" class="btn btn-danger btn-sm">月間データ削除</button></a>
+  {% endif %}
+
 <div class="container">
   <div class="row">
     <div class="col-7">
       <main class="center">
         <form name="f" method="post">
-          <!-- <div class="text_area">
-            <input type="date" name="new_date" id="new_date">
-            <input type="number" name="new_text" id="new_text">
-          </div> -->
           月間予定残業
           <input type="text" name="scheduled_overtime" id="scheduled_overtime" value="{{ scheduled_overtime }}" size="2">hr、
           前月最終日36残業時間
-          <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}" size="2">hr<br>
+          <input type="text" name="last_month_36_overtime" id="last_month_36_overtime" value="{{ last_month_36_overtime }}" size="2">hr、
           月間稼働日数 <span class="bold">{{ working_days }}日</span><br>
           <table class="table table-sm table-striped">
             <thead class="table-dark">
