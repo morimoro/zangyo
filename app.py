@@ -1,6 +1,6 @@
 #残業を管理するアプリ
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 # from sqlalchemy import desc #降順に並べ替えの時に必要
 import os
@@ -15,26 +15,57 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///overtime.sqlite'
 # データベースの作成
 db = SQLAlchemy(app)
 
-########################################################################
+# ユーザー名とパスワードを記録するデータベース
+class LoginUser(db.Model):
+
+    __tablename__ = "login_user_name"
+    #データベースの要素
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_name = db.Column(db.String())
+    password = db.Column(db.String())
+
+with app.app_context():
+    db.create_all()
+
+######################################################################################
+#メインページ
 @app.route('/', methods=["GET"])
 def index():
     if request.method == 'GET':
         return render_template("index.html")
 
-########################################################################
+######################################################################################
+#ユーザー名とパスワードを作成するページ
 @app.route('/user_create', methods=["GET", "POST"])
 def user():
     if request.method == 'GET':
         return render_template("user_create.html")
 
     else:
-        user_name = request.form["user_name"]
+        user_name_input = request.form["user_name"]
+        password_input = request.form["password"]
+
+        user_data = [LoginUser(
+            user_name = user_name_input,
+            password = password_input)] 
+        
+        # LoginUserのデータベースにuser_name_inputが存在していれば、何もしない
+        # 存在していない場合データベースにUser_nameとpasswordを追加
+        try:
+            exist = db.session.query(LoginUser).filter(LoginUser.user_name == user_name_input).first()
+            exist.user_name
+            flash('ユーザー名がすでに存在します')
+            return render_template("user_create.html")
+
+        except:
+            db.session.add_all(user_data)
+            db.session.commit()
 
         class OvertimeUser(db.Model):
 
             #データベースのテーブル名
             __table_args__ = {'extend_existing': True}
-            __tablename__ = user_name
+            __tablename__ = user_name_input
             #データベースの要素
             id = db.Column(db.Integer, primary_key=True, autoincrement=True)
             status = db.Column(db.Integer)
@@ -49,19 +80,33 @@ def user():
         with app.app_context():
             db.create_all()
 
-        return redirect(url_for('home', user_name=user_name))
+        return redirect(url_for('home', user_name=user_name_input))
 
-########################################################################
+######################################################################################
 @app.route('/user_login', methods=["GET", "POST"])
 def user_login():
     if request.method == 'GET':
         return render_template("user_login.html")
     
     else:
-        user_name = request.form["user_name"]
-        return redirect(url_for('home', user_name=user_name))
+        user_name_input = request.form["user_name"]
+        password_input = request.form["password"]
 
-########################################################################
+        # LoginUserのデータベースにuser_name_inputが存在かつパスワードが一致していれば、homeへ遷移
+        # 存在していないまたはパスワードが一致しない場合index.htmlへ戻る
+        try:
+            exist = db.session.query(LoginUser).filter(LoginUser.user_name == user_name_input).first()
+            if exist.password == password_input:
+                print(exist.user_name)
+                print(exist.password)
+                return redirect(url_for('home', user_name=user_name_input))
+            else:
+                return render_template("user_login.html")
+
+        except:
+            return render_template("user_login.html")
+
+######################################################################################
 @app.route('/home/<user_name>', methods=["GET", "POST"])
 def home(user_name):
     if request.method == "GET":
@@ -214,7 +259,7 @@ def home(user_name):
         overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days,
         date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list, user_name=user_name)
 
-########################################################################
+######################################################################################
 @app.route('/create/<user_name>', methods=["GET", "POST"])
 def create_user(user_name):
     if request.method == 'GET':
@@ -276,7 +321,7 @@ def create_user(user_name):
 
         return redirect(url_for('home', user_name=user_name))
 
-##########################################################################
+########################################################################################
 @app.route('/delete/<user_name>')
 def delete_user(user_name):
 
