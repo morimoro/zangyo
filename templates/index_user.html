@@ -7,11 +7,10 @@
 {% block body %}
 
 Usename:<span class="bold">{{ user_name }}</span>
-  {% if not overtimes %}
-    <a href="/create/{{ user_name }}"><button type="button" class="btn btn-primary btn-sm">月間データ作成</button></a>
-  {% else %}
-    <a href="/delete/{{ user_name }}"><button type="button" class="btn btn-danger btn-sm">月間データ削除</button></a>
-  {% endif %}
+{% if not overtimes %}
+  <a href="/create/{{ user_name }}"><button type="button" class="btn btn-primary btn-sm">月間データ作成</button></a>
+{% else %}
+  <a href="/delete/{{ user_name }}"><button type="button" class="btn btn-danger btn-sm">月間データ削除</button></a>
 
 <div class="container">
   <div class="row">
@@ -116,6 +115,7 @@ Usename:<span class="bold">{{ user_name }}</span>
     </div>
   </div>
 </div>
+{% endif %}
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
