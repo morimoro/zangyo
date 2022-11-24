@@ -49,7 +49,7 @@ def user():
             user_name = user_name_input,
             password = password_input)] 
         
-        # LoginUserのデータベースにuser_name_inputが存在していれば、何もしない
+        # LoginUserのデータベースにuser_name_inputが存在していれば、警告
         # 存在していない場合データベースにUser_nameとpasswordを追加
         try:
             exist = db.session.query(LoginUser).filter(LoginUser.user_name == user_name_input).first()
@@ -101,9 +101,11 @@ def user_login():
                 print(exist.password)
                 return redirect(url_for('home', user_name=user_name_input))
             else:
+                flash('パスワードが一致しません')
                 return render_template("user_login.html")
 
         except:
+            flash('ユーザー名が存在しません')
             return render_template("user_login.html")
 
 ######################################################################################
