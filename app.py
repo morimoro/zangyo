@@ -93,7 +93,7 @@ def user_login():
         password_input = request.form["password"]
 
         # LoginUserのデータベースにuser_name_inputが存在かつパスワードが一致していれば、homeへ遷移
-        # 存在していないまたはパスワードが一致しない場合index.htmlへ戻る
+        # 存在していないまたはパスワードが一致しない場合警告をだしてindex.htmlへ戻る
         try:
             exist = db.session.query(LoginUser).filter(LoginUser.user_name == user_name_input).first()
             if exist.password == password_input:
