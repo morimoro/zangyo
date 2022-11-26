@@ -25,12 +25,11 @@ Usename:<span class="bold">{{ user_name }}</span>
           <table class="table table-sm table-striped">
             <thead class="table-dark">
               <tr>
-                <th>ID</th>
                 <th>出勤日</th>
                 <th>日付</th>
                 <th></th>
-                <th>残業時間</th>
-                <th>休日残業</th>
+                <th>残業</th>
+                <th>休日残</th>
                 <th>36残</th>
                 <th>月残</th>
                 <th>理想</th>
@@ -39,10 +38,11 @@ Usename:<span class="bold">{{ user_name }}</span>
             </thead>
             <tbody>
               {% for overtime in overtimes %}
+                {% if overtime.date == today %}
+                <tr class="table-warning">
+                {% else %}
                 <tr>
-                  <td>
-                    {{ overtime.id }}
-                  </td>
+                {% endif %}
                   <td>
                       {% if overtime.status == 0 %}
                       <label class="gray"><input type="radio" name="status_{{overtime.id}}" value=1>出</label>

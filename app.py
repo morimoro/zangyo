@@ -83,6 +83,7 @@ def user():
         return redirect(url_for('home', user_name=user_name_input))
 
 ######################################################################################
+# ログインページ
 @app.route('/user_login', methods=["GET", "POST"])
 def user_login():
     if request.method == 'GET':
@@ -109,6 +110,7 @@ def user_login():
             return render_template("user_login.html")
 
 ######################################################################################
+# ユーザー毎の残業確認ページ
 @app.route('/home/<user_name>', methods=["GET", "POST"])
 def home(user_name):
     if request.method == "GET":
@@ -168,9 +170,15 @@ def home(user_name):
             estimated_time_list.append(overtime.estimated_time)
             time_36_list.append(overtime.time_36)
 
+        # 今日の日付を取得
+        today = datetime.date.today()
+        today = datetime.datetime.strftime(today, '%Y-%m-%d') #型変換
+
         return render_template("index_user.html",
         overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days,
-        date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list,user_name=user_name)
+        date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list,
+        today=today, user_name=user_name)
+
     else:
         print('update')
 
@@ -256,12 +264,18 @@ def home(user_name):
             total_time_list.append(overtime.total_time)
             estimated_time_list.append(overtime.estimated_time)
             time_36_list.append(overtime.time_36)
+        
+        # 今日の日付を取得
+        today = datetime.date.today()
+        today = datetime.datetime.strftime(today, '%Y-%m-%d') #型変換
 
         return render_template("index_user.html",
         overtimes = overtimes, scheduled_overtime=scheduled_overtime, last_month_36_overtime=last_month_36_overtime, working_days=working_days,
-        date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list, user_name=user_name)
+        date_list=date_list, total_time_list=total_time_list, estimated_time_list=estimated_time_list, time_36_list=time_36_list,
+        today=today, user_name=user_name)
 
 ######################################################################################
+# 残業データ作成ページ
 @app.route('/create/<user_name>', methods=["GET", "POST"])
 def create_user(user_name):
     if request.method == 'GET':
@@ -324,6 +338,7 @@ def create_user(user_name):
         return redirect(url_for('home', user_name=user_name))
 
 ########################################################################################
+# 残業データすべて削除ページ
 @app.route('/delete/<user_name>')
 def delete_user(user_name):
 
