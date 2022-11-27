@@ -363,4 +363,4 @@ def delete_user(user_name):
     db.session.commit()
     return redirect(url_for('home', user_name=user_name))
 
-app.run(debug=True, host=os.getenv('APP_ADDRESS', 'localhost'), port=8001)
+# app.run(debug=True, host=os.getenv('APP_ADDRESS', 'localhost'), port=8001)
