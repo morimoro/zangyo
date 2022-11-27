@@ -1,0 +1,4 @@
+# flyctl launch added from .gitignore
+# gitしないファイル
+# pycacheはパイソンのキャッシュ
+**\__pycache__
