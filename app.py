@@ -1,4 +1,8 @@
 #残業を管理するアプリ
+#Flaskを動かす
+# set FLASK_APP=app
+# set FLASK_ENV=development
+# flask run
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
